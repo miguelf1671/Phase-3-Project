@@ -24,7 +24,7 @@ def create_tables():
 
 def insert_items():
     conn = sqlite3.connect('Products.db')
-    cursor = conn.cursor()
+    cursor = conn.cursor() 
 
     items_data = [
         ('I1', 'ground beef', 10, 3),

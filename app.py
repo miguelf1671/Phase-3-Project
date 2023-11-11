@@ -54,20 +54,31 @@ class Myapp(customtkinter.CTk):
         save_button = customtkinter.CTkButton(self, font=font1, text_color='#fff', text="Save", fg_color='red3', hover_color='green3', bg_color='#0A0B0C', cursor='circle', corner_radius=25, width=110 )
         save_button.place(x=380, y=280)
 
-        new_button = customtkinter.CTkButton(self, font=font1, text_color='#fff', text="New", fg_color='green4', hover_color='green3', bg_color='#0A0B0C', cursor='circle', corner_radius=25, width=110 )
+        new_button = customtkinter.CTkButton(self, command=self.new, font=font1, text_color='#fff', text="New", fg_color='green4', hover_color='green3', bg_color='#0A0B0C', cursor='circle', corner_radius=25, width=110 )
         new_button.place(x=570, y=280)
 
         self.mainloop()
 
+    def new(self):
+        self.users_section_1.Name_entry.delete(0, END)
+        self.users_section_1.Position_entry.delete(0, END)
+
+        self.items_section.item_name_entry.delete(0, END)
+        self.items_section.amount_left_entry.delete(0, END)
+        self.items_section.amount_to_do_entry.delete(0, END)
+
+        self.prep_list_section.user_label.configure(text='')
+        self.prep_list_section.position_label.configure(text='')
+        self.prep_list_section.item_label.configure(text='')
+        self.prep_list_section.item_amount_left.configure(text='')
+        self.prep_list_section.item_amount_to_do.configure(text='')
+        self.prep_list_section.date_label.configure(text='')
     
     def receipt(self):
         from prep_list import PrepList
     
 
         import database
-
-        # users_section2 = UserSection
-        # items_section2 = ItemSection
 
 
         username = self.users_section_1.Name_entry.get()
@@ -81,7 +92,7 @@ class Myapp(customtkinter.CTk):
         # GET_COUNT_OF_TABLE_SCRIPT = '''SELECT COUNT(*) FROM Users'''
         GET_COUNT_OF_TABLE_SCRIPT = '''SELECT * FROM USERS'''
         NUM_PREEXISTING_USERS = len(cursor.execute(GET_COUNT_OF_TABLE_SCRIPT).fetchall())
-        print(NUM_PREEXISTING_USERS)
+        # print(NUM_PREEXISTING_USERS)
 
         # Get New User Data from Form Submission (GUI) (with Incremented ID)
         new_user_data = (f"U{NUM_PREEXISTING_USERS + 1}", username, position)
@@ -96,9 +107,26 @@ class Myapp(customtkinter.CTk):
         amount_left = self.items_section.amount_left_entry.get()
         amount_to_do = self.items_section.amount_to_do_entry.get()
 
-        # user_entries = [username, position]
-        # item_entries = [item_name, amount_left, amount_to_do]
-        item_name, amount_left, amount_to_do, username= database.get_product_amounts()
+        conn_items = sqlite3.connect("Products.db")
+        cursor_2 = conn_items.cursor()
+
+        GET_COUNT_OF_TABLE_ITEMS = '''SELECT * FROM ITEMS'''
+        NUM_OF_ITEMS = len(cursor_2.execute(GET_COUNT_OF_TABLE_ITEMS).fetchall())
+        print(NUM_OF_ITEMS)
+
+        new_items_data = (f"I{NUM_OF_ITEMS + 1}", item_name, amount_left, amount_to_do)
+        # print(new_items_data[0])
+        ADD_ITEMS_SCRIPT = '''INSERT INTO Items (id, name, amount_left, amount_to_do) VALUES (?, ?, ?, ?)'''
+        cursor_2.execute(ADD_ITEMS_SCRIPT, new_items_data)
+        conn_items.commit()
+        conn_items.close()
+
+        todays_date = date.today().strftime('%d %m %Y')
+
+        self.prep_list_section.insert_new_values(new_user_data[1], new_user_data[2], new_items_data[1], new_items_data[2], new_items_data[3], todays_date)
+
+
+        # item_name, amount_left, amount_to_do, username= database.get_product_amounts()
         # try: 
         #     items_quantities = []
         #     for entry in user_entries:
@@ -114,18 +142,20 @@ class Myapp(customtkinter.CTk):
         #             user_entries.append(text)
         #         else:
         #             user_quantities.append(0)
-            # todays_date = date.today().strftime('%d %m %Y')
         # except ValueError:('')
-        prep_list_section2 = PrepList(self)
-        user_label = prep_list_section2.user_label
-        item_label = prep_list_section2.item_label
-        item_amount_left = prep_list_section2.item_amount_left
-        item_amount_to_do = prep_list_section2.item_amount_to_do
+
+        # prep_list_section2 = PrepList(self)
+        # user_label = prep_list_section2.user_label
+        # item_label = prep_list_section2.item_label
+        # item_amount_left = prep_list_section2.item_amount_left
+        # item_amount_to_do = prep_list_section2.item_amount_to_do
+
         # date = prep_list_section2.date_l
-        user_label.configure(text=f'User: {username}')
-        item_label.configure(text=f'Item name: {item_name}')
-        item_amount_left.configure(text=f'Amount left: {amount_left}')
-        item_amount_to_do.configure(text=f'Amount to do: {amount_to_do}')
+
+        # user_label.configure(text=f'User: {new_user_data[1]}')
+        # item_label.configure(text=f'Item name: {item_name}')
+        # item_amount_left.configure(text=f'Amount left: {amount_left}')
+        # item_amount_to_do.configure(text=f'Amount to do: {amount_to_do}')
         # date.configure(text=f'Date:{todays_date}')
         return username, item_name, amount_left, amount_to_do
 
