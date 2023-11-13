@@ -1,18 +1,22 @@
 import customtkinter, sqlite3
 from tkinter import *
+# messagebox is used to pop up a window to communicate an alert or prompt to the user
 from tkinter import messagebox
 from datetime import date
+# PIL is used to get pictures into your project
 from PIL import Image, ImageTk
 
 class Myapp(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+        # creating the tittle for the app
         self.title('Prep List')
+        # dimensions off the window
         self.geometry('900x350')
         self.config(bg = '#0A0B0C')
         self.resizable(False, False)
         
-        
+        # importing modules
         from user_section import UserSection
         from item_section import ItemSection
         from prep_list import PrepList
@@ -20,13 +24,16 @@ class Myapp(customtkinter.CTk):
         font1=('Ariel', 15, 'bold')
         font2=('Ariel', 24, 'bold')
 
-
+        # placing the frames
         self.users_section_1 = UserSection(self)
         self.users_section_1.place(x=15, y=15)
 
+        # steps you need to take to get a image and place it
         chef_img = Image.open('chef_icon.png')
         resize_img1 = chef_img.resize((50, 50))
         img1 = ImageTk.PhotoImage(resize_img1)
+
+        # this is where you can choose what frame to place it in
         chef_img_label = Label(self.users_section_1, image=img1, bg='#1B1A1D')
         chef_img_label.place(x=140, y=20)
 
@@ -66,6 +73,7 @@ class Myapp(customtkinter.CTk):
         import database
 
 
+        # getting the input from the user section and saving it in a variable
         username = self.users_section_1.Name_entry.get()
         position = self.users_section_1.Position_entry.get()
 
@@ -88,6 +96,7 @@ class Myapp(customtkinter.CTk):
         conn.commit()
         conn.close()
 
+        # getting entry inputs
         item_name = self.items_section.item_name_entry.get()
         amount_left = self.items_section.amount_left_entry.get()
         amount_to_do = self.items_section.amount_to_do_entry.get()
@@ -96,6 +105,8 @@ class Myapp(customtkinter.CTk):
         cursor_2 = conn_items.cursor()
 
         GET_COUNT_OF_TABLE_ITEMS = '''SELECT * FROM ITEMS'''
+        
+        # getting number of tables
         NUM_OF_ITEMS = len(cursor_2.execute(GET_COUNT_OF_TABLE_ITEMS).fetchall())
         print(NUM_OF_ITEMS)
 
@@ -111,43 +122,27 @@ class Myapp(customtkinter.CTk):
         STR_IS_MORE_THAN_ONE_CHAR = len(username) > 1 and len(position) > 1 and len(item_name) > 1
 
         try: 
+            # making sure inputs are integers
             amount_left = int(amount_left)
             amount_to_do = int(amount_to_do)
         except ValueError:
             amount_left = None
             amount_to_do = None
 
-            
+            # adding conditionals to inputs
         if amount_left and amount_to_do and STR_IS_MORE_THAN_ONE_CHAR:
             self.prep_list_section.insert_new_values(new_user_data[1], new_user_data[2], new_items_data[1], new_items_data[2], new_items_data[3], todays_date)
             return username, position, item_name, amount_left, amount_to_do, todays_date
         else:
             messagebox.showerror('Error','All inputs need to be at least one character long and (amount left) and (amount to do) need to be integers')
 
-
-
-        # item_name, amount_left, amount_to_do, username= database.get_product_amounts()
-        # try: 
-        #     items_quantities = []
-        #     for entry in user_entries:
-        #         text = entry
-        #         if text:
-        #             items_quantities.append(text)
-        #         else:
-        #             items_quantities.append(0)
-        #     user_quantities = []
-        #     for entry in item_entries:
-        #         text = entry
-        #         if text:
-        #             user_entries.append(text)
-        #         else:
-        #             user_quantities.append(0)
-        # except ValueError:('')
-
     def save(self):
         prep_list = self.receipt()
+        # if a prep list is made
         if prep_list is not None:
             username, position, item_name, amount_left, amount_to_do, todays_date = prep_list
+            # with opens and closes a file and also makes the file
+            # this is to save all inputs into a text file
             with open('Prep-list.txt', 'a') as file:
                 file.write(f'Employee name: {username}\n')
                 file.write(f'Employee position: {position}\n')
@@ -158,6 +153,7 @@ class Myapp(customtkinter.CTk):
             messagebox.showinfo('Success!','Prep list has been saved.')
 
     def new(self):
+        # clearing any inputs on the entries
         self.users_section_1.Name_entry.delete(0, END)
         self.users_section_1.Position_entry.delete(0, END)
 

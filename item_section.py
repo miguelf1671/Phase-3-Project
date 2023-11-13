@@ -1,8 +1,6 @@
 import customtkinter
 from tkinter import *
-from tkinter import messagebox
-from datetime import date
-from PIL import Image, ImageTk
+
 # from app import app
 
 class ItemSection(customtkinter.CTkFrame):
@@ -35,7 +33,7 @@ class ItemSection(customtkinter.CTkFrame):
         self.amount_to_do_entry = customtkinter.CTkEntry(self, font=font1, text_color='#000', fg_color='#fff', border_color='#0c9295', border_width=2, width=50)
         self.amount_to_do_entry.place(x=150,y=200)
 
-        # parent.prepList1(item_name_entry, amount_left_entry, amount_to_do_entry)
+   
 
 
 

@@ -10,16 +10,21 @@ class PrepList(customtkinter.CTkFrame):
 
         font2=('Ariel', 24, 'bold')
 
+        # making the title for the frame
         title3_label = customtkinter.CTkLabel(self, font=font2, text='Prep List', text_color='#fff', bg_color='#1B1A1D')
         title3_label.place(x=38, y=40)
 
+        # We are getting these values from app and imputing them inside our labels for the preplist frame
     def insert_new_values(self, username, position, item_name, item_amount_left, item_amount_to_do, date):
 
         font1=('Ariel', 15, 'bold')
 
+        # all these labels are essentially blank at first and when the prep list button is clicked they will turn to that value
         self.user_label = customtkinter.CTkLabel(self, font=font1, text=username, text_color='#fff', bg_color='#1B1A1D')
         self.user_label.place(x=10, y=70)
+        
 
+        # for every label we need to place it or it will not show up in the frame
         self.position_label = customtkinter.CTkLabel(self, font=font1, text=position, text_color='#fff', bg_color='#1B1A1D')
         self.position_label.place(x=100, y=70)
 

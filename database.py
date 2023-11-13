@@ -2,10 +2,13 @@ import sqlite3
 
 def create_tables():
     conn = sqlite3.connect('Products.db')
+    #  .cursor() is used to execute statements to communicate with the MySQL database.
     cursor = conn.cursor()
 
+    # ignore these lines
     cursor.execute('''DROP TABLE IF EXISTS Users''')
     cursor.execute('''DROP TABLE IF EXISTS Items''')
+    # ignore
  
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Users(
@@ -23,15 +26,18 @@ def create_tables():
     conn.close()
 
 def insert_items():
+    # connecting to the Products database
     conn = sqlite3.connect('Products.db')
     cursor = conn.cursor() 
 
+    # preset sql data
     items_data = [
         ('I1', 'ground beef', 10, 3),
         ('I2', 'scallions', 3, 5),
         ('I3', 'duck sauce', 5, 5)
     ]
 
+    # cursor.executemany iterates through the sequence of parameters
     cursor.executemany('INSERT OR IGNORE INTO Items (id, name, amount_left, amount_to_do) VALUES (?, ?, ?, ?)', items_data)
 
     users_data = [
