@@ -51,28 +51,13 @@ class Myapp(customtkinter.CTk):
         self.receipt_button = customtkinter.CTkButton(self, command=self.receipt, font=font1, text_color='#fff', text="Prep List", fg_color='navy', hover_color='green3', bg_color='#0A0B0C', cursor='circle', corner_radius=25, width=110 )
         self.receipt_button.place(x=190, y=280)
 
-        save_button = customtkinter.CTkButton(self, font=font1, text_color='#fff', text="Save", fg_color='red3', hover_color='green3', bg_color='#0A0B0C', cursor='circle', corner_radius=25, width=110 )
+        save_button = customtkinter.CTkButton(self, command=self.save, font=font1, text_color='#fff', text="Save", fg_color='red3', hover_color='green3', bg_color='#0A0B0C', cursor='circle', corner_radius=25, width=110 )
         save_button.place(x=380, y=280)
 
         new_button = customtkinter.CTkButton(self, command=self.new, font=font1, text_color='#fff', text="New", fg_color='green4', hover_color='green3', bg_color='#0A0B0C', cursor='circle', corner_radius=25, width=110 )
         new_button.place(x=570, y=280)
 
         self.mainloop()
-
-    def new(self):
-        self.users_section_1.Name_entry.delete(0, END)
-        self.users_section_1.Position_entry.delete(0, END)
-
-        self.items_section.item_name_entry.delete(0, END)
-        self.items_section.amount_left_entry.delete(0, END)
-        self.items_section.amount_to_do_entry.delete(0, END)
-
-        self.prep_list_section.user_label.configure(text='')
-        self.prep_list_section.position_label.configure(text='')
-        self.prep_list_section.item_label.configure(text='')
-        self.prep_list_section.item_amount_left.configure(text='')
-        self.prep_list_section.item_amount_to_do.configure(text='')
-        self.prep_list_section.date_label.configure(text='')
     
     def receipt(self):
         from prep_list import PrepList
@@ -122,8 +107,23 @@ class Myapp(customtkinter.CTk):
         conn_items.close()
 
         todays_date = date.today().strftime('%d %m %Y')
+        
+        STR_IS_MORE_THAN_ONE_CHAR = len(username) > 1 and len(position) > 1 and len(item_name) > 1
 
-        self.prep_list_section.insert_new_values(new_user_data[1], new_user_data[2], new_items_data[1], new_items_data[2], new_items_data[3], todays_date)
+        try: 
+            amount_left = int(amount_left)
+            amount_to_do = int(amount_to_do)
+        except ValueError:
+            amount_left = None
+            amount_to_do = None
+
+            
+        if amount_left and amount_to_do and STR_IS_MORE_THAN_ONE_CHAR:
+            self.prep_list_section.insert_new_values(new_user_data[1], new_user_data[2], new_items_data[1], new_items_data[2], new_items_data[3], todays_date)
+            return username, position, item_name, amount_left, amount_to_do, todays_date
+        else:
+            messagebox.showerror('Error','All inputs need to be at least one character long and (amount left) and (amount to do) need to be integers')
+
 
 
         # item_name, amount_left, amount_to_do, username= database.get_product_amounts()
@@ -144,20 +144,33 @@ class Myapp(customtkinter.CTk):
         #             user_quantities.append(0)
         # except ValueError:('')
 
-        # prep_list_section2 = PrepList(self)
-        # user_label = prep_list_section2.user_label
-        # item_label = prep_list_section2.item_label
-        # item_amount_left = prep_list_section2.item_amount_left
-        # item_amount_to_do = prep_list_section2.item_amount_to_do
+    def save(self):
+        prep_list = self.receipt()
+        if prep_list is not None:
+            username, position, item_name, amount_left, amount_to_do, todays_date = prep_list
+            with open('Prep-list.txt', 'a') as file:
+                file.write(f'Employee name: {username}\n')
+                file.write(f'Employee position: {position}\n')
+                file.write(f'Item: {item_name}\n')
+                file.write(f'Amount left: {amount_left}\n')
+                file.write(f'Amount to do: {amount_to_do}\n')
+                file.write(f'Date: {todays_date}\n===================\n')
+            messagebox.showinfo('Success!','Prep list has been saved.')
 
-        # date = prep_list_section2.date_l
+    def new(self):
+        self.users_section_1.Name_entry.delete(0, END)
+        self.users_section_1.Position_entry.delete(0, END)
 
-        # user_label.configure(text=f'User: {new_user_data[1]}')
-        # item_label.configure(text=f'Item name: {item_name}')
-        # item_amount_left.configure(text=f'Amount left: {amount_left}')
-        # item_amount_to_do.configure(text=f'Amount to do: {amount_to_do}')
-        # date.configure(text=f'Date:{todays_date}')
-        return username, item_name, amount_left, amount_to_do
+        self.items_section.item_name_entry.delete(0, END)
+        self.items_section.amount_left_entry.delete(0, END)
+        self.items_section.amount_to_do_entry.delete(0, END)
+
+        self.prep_list_section.user_label.configure(text='')
+        self.prep_list_section.position_label.configure(text='')
+        self.prep_list_section.item_label.configure(text='')
+        self.prep_list_section.item_amount_left.configure(text='')
+        self.prep_list_section.item_amount_to_do.configure(text='')
+        self.prep_list_section.date_label.configure(text='')
 
         
 

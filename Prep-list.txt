@@ -1,0 +1,42 @@
+Employee name: kash
+Employee position: chef
+Item: beef
+Amount left: 2
+Amount to do: 4
+Date: 11 11 2023
+===================
+Employee name: kfmkf
+Employee position: fewkfm
+Item: fewnmf
+Amount left: 3
+Amount to do: 3
+Date: 11 11 2023
+===================
+Employee name: mgie
+Employee position: vdsl
+Item: vldsn
+Amount left: 3
+Amount to do: 3
+Date: 11 11 2023
+===================
+Employee name: ewf
+Employee position: fdf
+Item: fds
+Amount left: 3
+Amount to do: 4
+Date: 11 11 2023
+===================
+Employee name: jessi
+Employee position: grill
+Item: steak
+Amount left: 10
+Amount to do: 6
+Date: 11 11 2023
+===================
+Employee name: mgiuel
+Employee position: line cook
+Item: cheese
+Amount left: 3
+Amount to do: 4
+Date: 11 11 2023
+===================
